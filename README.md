@@ -54,3 +54,7 @@ options:
 This is a powershell adaptation of @Defte_'s article:
 [SensePost](https://sensepost.com/blog/2024/dumping-lsa-secrets-a-story-about-task-decorrelation/)
 
+# Ethical Only
+
+The intended use of this tool is strictly for educational purposes, promoting ethical understanding and responsible learning in the realm of cybersecurity. This tool is not meant for any malicious activities or unauthorized access.  
+Using this tool against hosts that you do not have explicit permission to test is illegal. You are responsible for any trouble you may cause by using this tool.
