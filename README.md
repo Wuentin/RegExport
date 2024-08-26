@@ -3,7 +3,7 @@
 Powershell script that exports the SAM & SECURITY hives. It also retrieves the bootkey, the secret needed to decrypt the hives.
 The goal is to make it easier to export and automate the recovery of Windows credentials.
 
-Currently system rights are mandatory, a workaround is being worked on.
+Administrator rights are mandatory.
 
 ```powershell
  ____            _____                       __
