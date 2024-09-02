@@ -29,7 +29,37 @@ The operation completed successfully.
 
 
 ```
+# BootkeyFromPDF
 
+You can use the Python script **BootkeyFromPDF.py** if you have printed LSA with regedit. The script will get the class values and calculate the bootkey.
+```powershell
+ ____              _   _              _____                    ____  ____  _____
+| __ )  ___   ___ | |_| | _____ _   _|  ___| __ ___  _ __ ___ |  _ \|  _ \|  ___|
+|  _ \ / _ \ / _ \| __| |/ / _ \ | | | |_ | '__/ _ \| '_ ` _ \| |_) | | | | |_
+| |_) | (_) | (_) | |_|   <  __/ |_| |  _|| | | (_) | | | | | |  __/| |_| |  _|
+|____/ \___/ \___/ \__|_|\_\___|\__, |_|  |_|  \___/|_| |_| |_|_|   |____/|_|
+                                |___/
+
+
+[*] HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\JD : ********
+[*] HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Skew1 : ********
+[*] HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\GBG : ********
+[*] HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Data : ********
+[+] Target system bootKey: ********************************
+
+```
+### Usage 
+```python
+ python .\pdf_parser.py --help
+usage: pdf_parser.py [-h] --path PATH
+
+Calculate bootkey from PDF.
+
+options:
+  -h, --help   show this help message and exit
+  --path PATH  Path to the PDF file
+
+```
 # Post Export
 You can use the Python script **RegExport.py** in a controlled VM to import the results of RegExport. Then the script will dump the results using Reg Save. Finally, decrypt the hives using bootkey to recover Windows secrets.
 
